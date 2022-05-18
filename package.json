@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc src/index.ts --outDir public/scripts --target es2015",
+    "build": "rd -r public\\scripts 2>null & tsc",
+    "build:dev": "rd -r public\\scripts 2>null & tsc -p tsconfig-dev.json",
     "start": "http-server -p 3000"
   },
   "author": "",

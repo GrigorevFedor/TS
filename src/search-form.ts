@@ -1,15 +1,15 @@
 import { renderBlock } from './lib.js'
 
-export function renderSearchFormBlock (dateIn: Date = new Date, dateOut: Date = new Date) {
+export function renderSearchFormBlock(dateIn: Date = new Date, dateOut: Date = new Date) {
   if (dateIn) {
     dateIn.setDate(dateIn.getDate() + 1)
   }
   if (dateOut) {
     dateOut.setDate(dateOut.getDate() + 3)
   }
-  console.log(new Date())
-  console.log(getMax(new Date()))
-  
+  // console.log(new Date())
+  // console.log(getMax(new Date()))
+
   function formatDate(date) {
 
     let dd = date.getDate();
@@ -23,9 +23,9 @@ export function renderSearchFormBlock (dateIn: Date = new Date, dateOut: Date = 
 
   function getMax(date) {
     let m = date.getMonth()
-    m+=2
-    if (m>=12) {
-      m-=12
+    m += 2
+    if (m >= 12) {
+      m -= 12
       date.setFullYear(date.getFullYear() + 1)
     }
 
@@ -54,11 +54,18 @@ export function renderSearchFormBlock (dateIn: Date = new Date, dateOut: Date = 
         <div class="row">
           <div>
             <label for="check-in-date">Дата заезда</label>
-            <input id="check-in-date" type="date" value=${formatDate(dateIn)} min="${formatDate(new Date())}" max="${formatDate(getMax(new Date()))}" name="checkin" />
+            <input id="check-in-date" type="date" value=${formatDate(dateIn)} 
+              min="${formatDate(new Date())}" 
+              max="${formatDate(getMax(new Date()))}" 
+              onchange="document.getElementById('check-out-date').setAttribute('min', document.getElementById('check-in-date').value)"
+              name="checkin" />
           </div>
           <div>
             <label for="check-out-date">Дата выезда</label>
-            <input id="check-out-date" type="date" value="${formatDate(dateOut)}" min="${formatDate(new Date())}" max="${formatDate(getMax(new Date()))}" name="checkout" />
+            <input id="check-out-date" type="date" value="${formatDate(dateOut)}" 
+              min="${formatDate(dateIn)}" 
+              max="${formatDate(getMax(new Date()))}" 
+              name="checkout" />
           </div>
           <div>
             <label for="max-price">Макс. цена суток</label>
