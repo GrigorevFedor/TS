@@ -9,6 +9,12 @@ interface user {
   avatarUrl: string,
 }
 
+export interface favorites {
+  id: number,
+  name: string,
+  img: string,
+}
+
 function getUserData(value: unknown = localStorage.getItem('user')): user {
   if (typeof value == 'string') {
 

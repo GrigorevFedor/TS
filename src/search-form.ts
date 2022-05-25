@@ -1,5 +1,7 @@
 
 import { renderBlock } from './lib.js'
+import { renderSearchStubBlock, renderEmptyOrErrorSearchBlock, renderSearchResultsBlock } from './search-results.js'
+import { API } from './api.js'
 
 interface SearchFormData {
   city: string,
@@ -7,6 +9,32 @@ interface SearchFormData {
   outDate: string,
   maxPrice: number
 }
+
+export interface ResponseSearchData {
+  id: string,
+  name: string,
+  description: string,
+  image: string,
+  remoteness: number,
+  bookedDates: string[],
+  price: number,
+}
+
+function search(searchObj: SearchFormData) {
+  // return fetch(API + `/places?maxPrice=${searchObj.maxPrice}&coordinates=${searchObj.maxPrice},${searchObj.maxPrice}&checkInDate=${new Date(searchObj.inDate).getTime()}&checkOutDate=${new Date(searchObj.outDate).getTime()}`)
+  return fetch(API + `/places?maxPrice=${searchObj.maxPrice}&coordinates=59.9386,30.3141&checkInDate=${new Date(searchObj.inDate).getTime()}&checkOutDate=${new Date(searchObj.outDate).getTime()}`)
+
+    .then((response) => {
+      return response.text()
+    })
+    .then<ResponseSearchData[]>((responseText) => {
+      return JSON.parse(responseText)
+    })
+    .then((data) => {
+      renderSearchResultsBlock(data)
+    })
+}
+
 
 export function renderSearchFormBlock(dateIn: Date = new Date, dateOut: Date = new Date) {
   if (dateIn) {
@@ -16,9 +44,9 @@ export function renderSearchFormBlock(dateIn: Date = new Date, dateOut: Date = n
     dateOut.setDate(dateOut.getDate() + 3)
   }
 
-  function search(searchObj: SearchFormData): void {
-    console.log(searchObj)
-  }
+  // function search(searchObj: SearchFormData): void {
+  //   console.log(searchObj)
+  // }
 
   function formatDate(date) {
 
