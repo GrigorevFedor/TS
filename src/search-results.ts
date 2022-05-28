@@ -1,6 +1,6 @@
 import { renderBlock } from './lib.js'
 import { ResponseSearchData } from './search-form.js'
-import { favorites } from './index.js'
+import { favorites, getFavorites } from './index.js'
 
 export function renderSearchStubBlock() {
   renderBlock(
@@ -71,22 +71,21 @@ export function renderSearchResultsBlock(data: ResponseSearchData[]) {
     `
   )
 
-  function toggleFavoriteItem(el: favorites) {
-    let data = []
-    data = JSON.parse(localStorage.getItem('favoriteItems'))
-    let f = true
-    if (data) {
+  function toggleFavoriteItem(element: favorites) {
+    let favoritesArr: favorites[] = getFavorites()
+    let notExist: boolean = true
 
-      data.forEach((el, index) => {
-        if (el.id == el.id) {
-          data.splice(index, 1)
-        }
-      })
+    favoritesArr.forEach((item, index) => {
+      if (element.id == item.id) {
+        favoritesArr.splice(index, 1)
+        notExist = false
+      }
+    })
+
+    if (notExist) {
+      favoritesArr.push(element)
     }
-    if (f) {
-      data.push(el)
-    }
-    localStorage.setItem('favoriteItems', JSON.stringify(data))
+    localStorage.setItem('favoriteItems', JSON.stringify(favoritesArr))
   }
 
   const buttonArr: Element[] = Array.from(document.getElementsByClassName('favorites'))

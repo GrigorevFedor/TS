@@ -1,6 +1,7 @@
 import { renderBlock } from './lib.js'
+import { favorites } from './index.js'
 
-export function renderUserBlock(name: string, avatarLink: string, favoriteItemsAmount: number = undefined) {
+export function renderUserBlock(name: string, avatarLink: string, favoriteItemsAmount: favorites[]) {
   const favoritesCaption = favoriteItemsAmount ? favoriteItemsAmount : 'ничего нет'
   const hasFavoriteItems = favoriteItemsAmount ? true : false
 
@@ -18,4 +19,6 @@ export function renderUserBlock(name: string, avatarLink: string, favoriteItemsA
     </div>
     `
   )
+
 }
+

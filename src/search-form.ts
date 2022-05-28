@@ -2,6 +2,7 @@
 import { renderBlock } from './lib.js'
 import { renderSearchStubBlock, renderEmptyOrErrorSearchBlock, renderSearchResultsBlock } from './search-results.js'
 import { API } from './api.js'
+import { favorites } from './index.js'
 
 interface SearchFormData {
   city: string,

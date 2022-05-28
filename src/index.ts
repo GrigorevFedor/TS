@@ -32,18 +32,29 @@ function getUserData(value: unknown = localStorage.getItem('user')): user {
   return defaultUser
 }
 
-function getFavoritesAmount(value: unknown = localStorage.getItem('favoritesAmount')): number {
-  if (typeof value == 'string') {
-    return +value
+export function getFavorites(value: unknown = JSON.parse(localStorage.getItem('favoriteItems'))): favorites[] {
+  const arr: favorites[] = []
+  if (typeof value === 'object') {
+    if (value instanceof Array) {
+      value.forEach((el) => {
+        const arrEl: favorites = {
+          id: el.id,
+          name: el.name,
+          img: el.img,
+        }
+        arr.push(arrEl)
+      })
+    }
   }
 
-  return 0
+  return arr
 }
 
 
 window.addEventListener('DOMContentLoaded', () => {
   const userData: user = getUserData()
-  renderUserBlock(userData.username, userData.avatarUrl, getFavoritesAmount())
+  const favorites: favorites[] = getFavorites()
+  renderUserBlock(userData.username, userData.avatarUrl, favorites)
   renderSearchFormBlock()
   renderSearchStubBlock()
   renderToast(
