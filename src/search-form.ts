@@ -21,8 +21,11 @@ export interface ResponseSearchData {
   price: number,
 }
 
+function searchWrp(searchObj: SearchFormData) {
+  let mode = (<HTMLInputElement>document.getElementById('city')).value
+}
+
 function search(searchObj: SearchFormData) {
-  // return fetch(API + `/places?maxPrice=${searchObj.maxPrice}&coordinates=${searchObj.maxPrice},${searchObj.maxPrice}&checkInDate=${new Date(searchObj.inDate).getTime()}&checkOutDate=${new Date(searchObj.outDate).getTime()}`)
   return fetch(API + `/places?maxPrice=${searchObj.maxPrice}&coordinates=59.9386,30.3141&checkInDate=${new Date(searchObj.inDate).getTime()}&checkOutDate=${new Date(searchObj.outDate).getTime()}`)
 
     .then((response) => {
@@ -45,17 +48,14 @@ export function renderSearchFormBlock(dateIn: Date = new Date, dateOut: Date = n
     dateOut.setDate(dateOut.getDate() + 3)
   }
 
-  // function search(searchObj: SearchFormData): void {
-  //   console.log(searchObj)
-  // }
 
-  function formatDate(date) {
+  function formatDate(date: Date): string {
 
-    let dd = date.getDate();
-    if (dd < 10) dd = '0' + dd;
-    let mm = date.getMonth() + 1;
+    let dd: string | number = date.getDate();
+    if (dd < 10) dd = `0${dd}`;
+    let mm: string | number = date.getMonth() + 1;
     if (mm < 10) mm = '0' + mm;
-    let yy = date.getFullYear();
+    let yy: string | number = date.getFullYear();
 
     return yy + '-' + mm + '-' + dd;
   }
@@ -79,6 +79,10 @@ export function renderSearchFormBlock(dateIn: Date = new Date, dateOut: Date = n
     `
     <form>
       <fieldset class="search-filedset">
+        <div class="row">
+          <p><input name="api" type="radio" value="api" checked> API</p>
+          <p><input name="api" type="radio" value="sdk"> SDK</p>
+        </div>
         <div class="row">
           <div>
             <label for="city">Город</label>
