@@ -5,8 +5,13 @@
         "module": "es2015",
         "moduleResolution": "node",
         "allowJs": true,
+        "declaration": true,
+        "declarationDir": "public/scripts/types"
     },
-    "files": [
-        "src/index.ts"
+    // "files": [
+    //     "src/index.ts"
+    // ]
+    "include": [
+        "src/**/*"
     ]
 }

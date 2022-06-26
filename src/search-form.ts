@@ -3,11 +3,12 @@ import { renderBlock } from './lib.js'
 import { renderSearchStubBlock, renderEmptyOrErrorSearchBlock, renderSearchResultsBlock } from './search-results.js'
 import { API } from './api.js'
 import { favorites } from './index.js'
+import { FlatRentSdk } from './flat-rent-sdk.js'
 
-interface SearchFormData {
+export interface SearchFormData {
   city: string,
-  inDate: string,
-  outDate: string,
+  checkInDate: string,
+  checkOutDate: string,
   maxPrice: number
 }
 
@@ -21,22 +22,35 @@ export interface ResponseSearchData {
   price: number,
 }
 
-function searchWrp(searchObj: SearchFormData) {
-  let mode = (<HTMLInputElement>document.getElementById('city')).value
+function searchMethod(): string {
+  let modeArr = document.querySelectorAll('input[name="api"]')
+
+  for (const f of modeArr) {
+    if ((<HTMLInputElement>f).checked) {
+      return ((<HTMLInputElement>f).value)
+    }
+  }
 }
 
-function search(searchObj: SearchFormData) {
-  return fetch(API + `/places?maxPrice=${searchObj.maxPrice}&coordinates=59.9386,30.3141&checkInDate=${new Date(searchObj.inDate).getTime()}&checkOutDate=${new Date(searchObj.outDate).getTime()}`)
+function search(searchObj: SearchFormData, searchMethod: string) {
+  switch (searchMethod) {
+    case "api":
+      return fetch(API + `/places?maxPrice=${searchObj.maxPrice}&coordinates=59.9386,30.3141&checkInDate=${new Date(searchObj.checkInDate).getTime()}&checkOutDate=${new Date(searchObj.checkOutDate).getTime()}`)
 
-    .then((response) => {
-      return response.text()
-    })
-    .then<ResponseSearchData[]>((responseText) => {
-      return JSON.parse(responseText)
-    })
-    .then((data) => {
-      renderSearchResultsBlock(data)
-    })
+        .then((response) => {
+          return response.text()
+        })
+        .then<ResponseSearchData[]>((responseText) => {
+          return JSON.parse(responseText)
+        })
+        .then((data) => {
+          renderSearchResultsBlock(data)
+        })
+    case "sdk":
+      const sdk = new FlatRentSdk()
+      renderSearchResultsBlock(sdk.search(searchObj))
+  }
+
 }
 
 
@@ -128,11 +142,11 @@ export function renderSearchFormBlock(dateIn: Date = new Date, dateOut: Date = n
     button.onclick = function () {
       let data: SearchFormData = {
         city: (<HTMLInputElement>document.getElementById('city')).value,
-        inDate: (<HTMLInputElement>document.getElementById('check-in-date')).value,
-        outDate: (<HTMLInputElement>document.getElementById('check-out-date')).value,
+        checkInDate: (<HTMLInputElement>document.getElementById('check-in-date')).value,
+        checkOutDate: (<HTMLInputElement>document.getElementById('check-out-date')).value,
         maxPrice: +(<HTMLInputElement>document.getElementById('max-price')).value,
       }
-      search(data)
+      search(data, searchMethod())
     }
   }
 }

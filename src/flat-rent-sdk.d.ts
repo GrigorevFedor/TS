@@ -1,5 +1,6 @@
-import { ResponseSearchData } from './search-form'
+import { ResponseSearchData, SearchFormData } from './search-form'
 
-interface FlatRentSdk {
-    search(parameters: string): ResponseSearchData[],
+export class FlatRentSdk {
+    search(parameters: SearchFormData): ResponseSearchData[]
 }
+
