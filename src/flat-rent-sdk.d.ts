@@ -1,6 +1,8 @@
-import { ResponseSearchData, SearchFormData } from './search-form'
+import { ResponseSearchDataSdk, SearchFormData } from './search-form'
+
+
 
 export class FlatRentSdk {
-    search(parameters: SearchFormData): ResponseSearchData[]
+    search(parameters: SearchFormData): Promise<ResponseSearchDataSdk[]>
 }
 

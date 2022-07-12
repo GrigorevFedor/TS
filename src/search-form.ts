@@ -7,8 +7,8 @@ import { FlatRentSdk } from './flat-rent-sdk.js'
 
 export interface SearchFormData {
   city: string,
-  checkInDate: string,
-  checkOutDate: string,
+  checkInDate: Date,
+  checkOutDate: Date,
   maxPrice: number
 }
 
@@ -22,37 +22,70 @@ export interface ResponseSearchData {
   price: number,
 }
 
-function searchMethod(): string {
-  let modeArr = document.querySelectorAll('input[name="api"]')
+export interface ResponseSearchDataSdk {
+  id: string,
+  title: string,
+  details: string,
+  photos: string[],
+  coordinates: number[],
+  bookedDates: string[],
+  price: number,
+}
 
-  for (const f of modeArr) {
-    if ((<HTMLInputElement>f).checked) {
-      return ((<HTMLInputElement>f).value)
+export class getPlaces {
+  static async fetchPlaces(params: SearchFormData, api: boolean, sdk: boolean): Promise<ResponseSearchData[]> {
+    let result: ResponseSearchData[] = []
+
+    if (api) {
+      const response = await this.fetchApi(params)
+      result = [...result, ...response]
     }
-  }
-}
 
-function search(searchObj: SearchFormData, searchMethod: string) {
-  switch (searchMethod) {
-    case "api":
-      return fetch(API + `/places?maxPrice=${searchObj.maxPrice}&coordinates=59.9386,30.3141&checkInDate=${new Date(searchObj.checkInDate).getTime()}&checkOutDate=${new Date(searchObj.checkOutDate).getTime()}`)
+    if (sdk) {
+      const response = await this.fetchSdk(params)
+      console.log('response', response)
+      result = [...result, ...this.sdkToApi(response)]
+    }
 
-        .then((response) => {
-          return response.text()
-        })
-        .then<ResponseSearchData[]>((responseText) => {
-          return JSON.parse(responseText)
-        })
-        .then((data) => {
-          renderSearchResultsBlock(data)
-        })
-    case "sdk":
-      const sdk = new FlatRentSdk()
-      renderSearchResultsBlock(sdk.search(searchObj))
+    return result
   }
 
-}
+  private static sdkToApi(items: ResponseSearchDataSdk[]): ResponseSearchData[] {
+    const res: ResponseSearchData[] = []
+    items.forEach((el) => {
+      const newEl: ResponseSearchData = {
+        id: el.id,
+        name: el.title,
+        description: el.details,
+        image: '',
+        remoteness: 0,
+        bookedDates: el.bookedDates,
+        price: el.price,
+      }
+      res.push(newEl)
+    })
+    return res
+  }
 
+  private static fetchApi(searchObj: SearchFormData) {
+    return fetch(API + `/places?maxPrice=${searchObj.maxPrice}&coordinates=59.9386,30.3141&checkInDate=${new Date(searchObj.checkInDate).getTime()}&checkOutDate=${new Date(searchObj.checkOutDate).getTime()}`)
+      .then((response) => {
+        return response.text()
+      })
+      .then<ResponseSearchData[]>((responseText) => {
+        return JSON.parse(responseText)
+      })
+
+  }
+
+  private static fetchSdk(searchObj: SearchFormData) {
+    const sdk = new FlatRentSdk()
+    return sdk.search(searchObj)
+      .then((response) => {
+        return response
+      })
+  }
+}
 
 export function renderSearchFormBlock(dateIn: Date = new Date, dateOut: Date = new Date) {
   if (dateIn) {
@@ -94,8 +127,8 @@ export function renderSearchFormBlock(dateIn: Date = new Date, dateOut: Date = n
     <form>
       <fieldset class="search-filedset">
         <div class="row">
-          <p><input name="api" type="radio" value="api" checked> API</p>
-          <p><input name="api" type="radio" value="sdk"> SDK</p>
+          <p><input id="api" type="checkbox" checked> API</p>
+          <p><input id="sdk" type="checkbox" checked> SDK</p>
         </div>
         <div class="row">
           <div>
@@ -142,11 +175,14 @@ export function renderSearchFormBlock(dateIn: Date = new Date, dateOut: Date = n
     button.onclick = function () {
       let data: SearchFormData = {
         city: (<HTMLInputElement>document.getElementById('city')).value,
-        checkInDate: (<HTMLInputElement>document.getElementById('check-in-date')).value,
-        checkOutDate: (<HTMLInputElement>document.getElementById('check-out-date')).value,
+        checkInDate: new Date((<HTMLInputElement>document.getElementById('check-in-date')).value),
+        checkOutDate: new Date((<HTMLInputElement>document.getElementById('check-out-date')).value),
         maxPrice: +(<HTMLInputElement>document.getElementById('max-price')).value,
       }
-      search(data, searchMethod())
+      const api = (<HTMLInputElement>document.getElementById('api')).checked
+      const sdk = (<HTMLInputElement>document.getElementById('sdk')).checked
+      getPlaces.fetchPlaces(data, api, sdk).then((value) => renderSearchResultsBlock(value))
+
     }
   }
 }
